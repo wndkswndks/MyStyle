@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +45,10 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+extern UART_T m_uart[UART_CH_MAX];
 
+uint8_t uartstart[1]={0,};
+uint8_t uuuart[10]="qwerty";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -68,7 +71,7 @@ static void MX_USART2_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	static uint8_t databuff[5]={0,}; 
   /* USER CODE END 1 */
   
 
@@ -92,7 +95,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+	HAL_UART_Receive_IT(&huart2,(uint8_t*)m_uart[UART_CH_PC].Rx_byte,1);
+	HAL_Delay(1000);
 
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,11 +108,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-      HAL_Delay(300);
+
+	  UART_Pop(databuff, UART_CH_PC,&m_uart[UART_CH_PC]);
+
   }
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -168,7 +174,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
