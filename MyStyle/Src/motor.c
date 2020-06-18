@@ -3,6 +3,8 @@
 #include "commonheader.h"
 uint32_t qqwe;
 Motor_drive_T m_PA;
+Motor_drive_T m_RO;
+
 
 void MOTOR_Init()
 {
@@ -224,28 +226,14 @@ void MOTOR_PA_Origin()
 	switch(step)
 	{
 	     case STEP1:
-			if(m_PA.sensor_flag)
-			{
-				MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);
-				step = STEP6;
-			}
-			else
-			{
-				MOTOR_Drive(&m_PA,DIR_FORWARD,10,100,300);
-				step =STEP2;
-			}
+	     
+			if(m_PA.sensor_flag){MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);  step = STEP6;}
+			else{MOTOR_Drive(&m_PA,DIR_FORWARD,10,100,300);	step =STEP2;} 
 	     break;
 
 	     case STEP2:
-			if(m_PA.sensor_flag)
-			{
-				MOTOR_Slow_stop(&m_PA, 300);
-				step =STEP3;
-			}
-			else
-			{
-				//err
-			}
+			if(m_PA.sensor_flag){ MOTOR_Slow_stop(&m_PA, 300);	step =STEP3;}
+			else if(!m_PA.sensor_flag && m_PA.stop_flag ) {} //err	
 	     break;
 
 	     case STEP3:
@@ -253,59 +241,26 @@ void MOTOR_PA_Origin()
 			{
 				if(TIME_Passed(&m_PA.time[0],1000)) 
 				{
-					if(m_PA.sensor_flag) 
-					{
-						MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);
-						step =STEP6;
-					}
-					else 
-					{
-						MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);
-						step =STEP4;
-					}
+					if(m_PA.sensor_flag){ MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);	step =STEP6; } 
+					else{ MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);	step =STEP4; } 
 				}
 			}
-			else
-			{
-				//err
-			}
+			else{} //err
 	     break;
 
 	     case STEP4:
-			if(m_PA.sensor_flag) 
-			{
-				MOTOR_Stop(&m_PA);
-				step =STEP5;
-			}
-			else
-			{
-				//err
-			}
+			if(m_PA.sensor_flag) { MOTOR_Stop(&m_PA);	step =STEP5;}
+			else if(!m_PA.sensor_flag && m_PA.stop_flag ){} //err
 	     break;
 
 	     case STEP5:
-	     	if(m_PA.sensor_flag) 
-			{
-				MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);
-				step =STEP6;
-			}
-			else
-			{
-				//err
-			}
-
+	     	if(m_PA.sensor_flag){MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);	step =STEP6;} 
+			else if(!m_PA.sensor_flag && m_PA.stop_flag ){} //err
 	     break;
 
 	     case STEP6:
-			if(!m_PA.sensor_flag) 
-			{
-				MOTOR_Stop(&m_PA);
-				step =STEP7;
-			}
-			else
-			{
-				//err
-			}
+			if(!m_PA.sensor_flag){MOTOR_Stop(&m_PA);	step =STEP7;} 
+			else if(m_PA.sensor_flag && m_PA.stop_flag ){} //err
 		 break;		 
 		 
 		 case STEP7:
@@ -315,16 +270,181 @@ void MOTOR_PA_Origin()
 				m_PA.org_complete_flag = 1;
 				m_PA.position_cnt = 0;
 		 	}
-
 	     break;
 
-	     case STEP8:
 
+	}
+}
+
+void MOTOR_PA_Origin()
+{
+	static uint8_t step =STEP1;
+	static uint32_t lastTime;
+	static uint8_t sensorRecode = 0;
+	static uint8_t err= NO;
+
+	
+	switch(step)
+	{
+	     case STEP1:
+	     	if(m_PA.sensor_flag) step = STEP5;
+	     	else step = STEP2;
 	     break;
 
-	     case STEP9:
+	     case STEP2:
+			if(MOTOR_SensorCheek(&m_PA , DIR_FORWARD,10,100, 300, YES)) 
+			{
+				MOTOR_Slow_stop(&m_PA, 300);
+				step = STEP3;
+			}
+			else if(m_PA.stop_flag) err = YES;
+	     break;
 
+	     case STEP3:
+			if(m_PA.stop_flag)
+			{
+				if(TIME_Passed(&m_PA.time[0],1000)) 
+				{
+					if(m_PA.sensor_flag) step =STEP5; 
+					else step =STEP4; 
+				}
+			}
+	     break;
+
+	     case STEP4:
+			if(MOTOR_SensorCheek(&m_PA , DIR_BACKWARD,10,10, 300, YES)) 
+			{
+				MOTOR_Stop(&m_PA);
+				step =STEP5;
+			}
+			else if(m_PA.stop_flag) err = YES;
+	     break;
+
+	     case STEP5:
+			if(MOTOR_SensorCheek(&m_PA , DIR_BACKWARD,10,10, 300, NO)) 
+			{
+				MOTOR_Stop(&m_PA);
+				step =STEP6;
+			}
+			else if(m_PA.stop_flag) err = YES;
+	     break;
+
+	     case STEP6:
+			step =STEP_END;
+		 break;		 
+		 	
+
+
+	}
+}
+
+uint8_t MOTOR_SensorCheek(Motor_drive_T * motor , uint8_t dir,uint32_t startspeed, uint32_t destspeed, uint32_t totalpulse,uint8_t sensorstate)
+{
+	static uint8_t step =STEP1;
+	switch(step)
+	{
+	   case STEP1:
+		MOTOR_Drive(motor,dir,startspeed,destspeed,totalpulse);	
+		step = STEP2;
+	   break;
+	   case STEP2:
+		if(motor->sensor_flag == sensorstate) 
+		{
+			step =STEP1;
+			return YES;
+		}
+		else return NO;
+	   break;
+	}	
+}
+
+uint8_t MOTOR_StopCheek(Motor_drive_T * motor , uint8_t dir,uint32_t startspeed, uint32_t destspeed, uint32_t totalpulse,uint8_t sensorstate)
+{
+	static uint8_t step =STEP1;
+	switch(step)
+	{
+	   case STEP1:
+		MOTOR_Drive(motor,dir,startspeed,destspeed,totalpulse);	
+		step = STEP2;
+	   break;
+	   case STEP2:
+		if(motor->stop_flag == sensorstate) 
+		{
+			step =STEP1;
+			return YES;
+		}
+		else return NO;
+	   break;
+	}	
+}
+
+
+void MOTOR_RO_Origin()
+{
+	static uint8_t step =STEP1;
+	int nowAdcDegree;
+	long moveDegree;
+	static int prevAdcDegree = 0;
+	switch(step)
+	{
+
+	     case STEP1:
+			if(MOTOR_ReadDegree_RO(&nowAdcDegree) == YES)
+			{
+				if(nowAdcDegree < prevAdcDegree) 
+				{
+					moveDegree = prevAdcDegree - nowAdcDegree;
+					moveDegree *= RO_1_DEGREE_PULSE; 
+					MOTOR_Drive(&m_RO,DIR_FORWARD,10,100,moveDegree);
+				}
+				else if(nowAdcDegree >= prevAdcDegree) 
+				{
+					moveDegree = nowAdcDegree - nowAdcDegree;
+					moveDegree *= RO_1_DEGREE_PULSE; 
+					MOTOR_Drive(&m_RO,DIR_BACKWARD,10,100,moveDegree);
+				}
+				step = STEP2;
+			}
+	     break;
+
+	     case STEP2:
+	     	if(m_RO.stop_flag)
+	     	{
+				if(TIME_Passed(&m_RO.time[0],1000)) 
+				{
+					moveDegree = 100 * RO_1_DEGREE_PULSE; 
+					MOTOR_Drive(&m_RO,DIR_BACKWARD,10,100,moveDegree);
+					step = STEP3;
+				}
+	     	}
+	     break;
+
+	     case STEP3:
+	     	if(m_RO.sensor_flag)
+	     	{
+				MOTOR_Stop(&m_RO);
+				step = STEP4;
+	     	}
+	     break;
+
+	     case STEP4:
+	     	if(m_RO.stop_flag)
+	     	{
+				if(TIME_Passed(&m_RO.time[0],1000)) 
+				{
+					MOTOR_ReadDegree_RO(&prevAdcDegree);
+					m_RO.org_complete_flag = 1;
+					m_RO.position_cnt = 0;
+					step = STEP_END;
+				}
+	     	}
 	     break;
 
 	}
 }
+
+int MOTOR_ReadDegree_RO(int *adcDegree)
+{
+	
+}
+

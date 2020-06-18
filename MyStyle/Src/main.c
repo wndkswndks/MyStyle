@@ -111,7 +111,7 @@ int main(void)//==//
 	HAL_Delay(1000);
     HAL_TIM_Base_Start_IT(&htim10);
 
-	MOTOR_Drive(&m_PA,DIR_FORWARD,60,70,100);
+	MOTOR_Drive(&m_PA,DIR_FORWARD,200,300,100);
 	//MOTOR_Slow_stop(&m_PA,150);
   /* USER CODE END 2 */
 
