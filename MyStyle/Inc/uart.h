@@ -1,8 +1,10 @@
 //uart.h
-#include "commonheader.h"
+
 #ifndef __UART_H
 #define __UART_H
 /*  			include start  			*/
+#include "commonheader.h"
+
 extern UART_HandleTypeDef huart2;
 
 /*  			include end  			*/
@@ -11,7 +13,15 @@ extern UART_HandleTypeDef huart2;
 
 /*  			define start  			*/
 #define RX_BLOCK_MAX	5
-#define RX_CNT_MAX	5
+#define RX_CNT_MAX	20
+
+#define UART_STRING_MODE		"pmm"
+#define UART_STRING_CTRL		"pmc"
+
+#define UART_TYPE_MODE  	1
+#define UART_TYPE_CTRL  	2
+
+
 /*  			define end  			*/
 
 
@@ -42,14 +52,26 @@ typedef struct
 	uint8_t startflag;
 	uint8_t nextturn;
 } UART_T;
+
+typedef struct
+{
+	uint8_t type;
+	long inst;
+	int value;
+} UART_CMD_T;
 /*  			stuct end  				*/
 
 
 
 /*  			function start  		*/
-void UART_Pop(uint8_t *, UART_CH_E, UART_T *);
+void UART_Pop(uint8_t * , UART_T *);
 void UART_Insert(UART_CH_E , UART_T *);
-UART_HandleTypeDef * Uart_master(UART_CH_E);
+void UART_Cmd();
+void UART_IS_Getdata(UART_T *);
+UART_HandleTypeDef * UART_master(UART_CH_E);
+UART_CMD_T UART_Passing_data(char *);
+
+
 
 /*  			function end  			*/
 

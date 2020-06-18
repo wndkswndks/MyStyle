@@ -23,7 +23,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "uart.h"
+#include "commonheader.h"
+
+#include <assert.h>
+extern Motor_drive_T m_PA;
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,25 +46,31 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim10;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-extern UART_T m_uart[UART_CH_MAX];
+
+//extern Motor_drive_T m_PA;
 
 uint8_t uartstart[1]={0,};
 uint8_t uuuart[10]="qwerty";
+uint8_t ererer=5;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM10_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -94,11 +104,15 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
+  	MOTOR_Init();
 	HAL_UART_Receive_IT(&huart2,(uint8_t*)m_uart[UART_CH_PC].Rx_byte,1);
 	HAL_Delay(1000);
+    HAL_TIM_Base_Start_IT(&htim10);
 
-	
+	MOTOR_Drive(&m_PA,DIR_FORWARD,60,70,100);
+	//MOTOR_Slow_stop(&m_PA,150);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,7 +123,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  UART_Pop(databuff, UART_CH_PC,&m_uart[UART_CH_PC]);
+	  UART_Cmd();
 
   }
   /* USER CODE END 3 */
@@ -156,6 +170,37 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM10 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM10_Init(void)
+{
+
+  /* USER CODE BEGIN TIM10_Init 0 */
+
+  /* USER CODE END TIM10_Init 0 */
+
+  /* USER CODE BEGIN TIM10_Init 1 */
+
+  /* USER CODE END TIM10_Init 1 */
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 839;
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 9999;
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM10_Init 2 */
+
+  /* USER CODE END TIM10_Init 2 */
+
 }
 
 /**
@@ -225,6 +270,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 
 /* USER CODE END 4 */
 
