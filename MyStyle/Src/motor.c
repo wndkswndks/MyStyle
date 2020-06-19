@@ -216,132 +216,10 @@ void MOTOR_Drive(Motor_drive_T * motor , uint8_t dir,uint32_t startspeed, uint32
 	
 }
 
-void MOTOR_PA_Origin_1()
+
+uint8_t MOTOR_PA_Origin()
 {
 	static uint8_t step =STEP1;
-	static uint32_t lastTime;
-	static uint8_t sensorRecode = 0;
-
-	
-	switch(step)
-	{
-	     case STEP1:
-	     
-			if(m_PA.sensor_flag){MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);  step = STEP6;}
-			else{MOTOR_Drive(&m_PA,DIR_FORWARD,10,100,300);	step =STEP2;} 
-	     break;
-
-	     case STEP2:
-			if(m_PA.sensor_flag){ MOTOR_Slow_stop(&m_PA, 300);	step =STEP3;}
-			else if(!m_PA.sensor_flag && m_PA.stop_flag ) {} //err	
-	     break;
-
-	     case STEP3:
-			if(m_PA.stop_flag)
-			{
-				if(TIME_Passed(&m_PA.time[0],1000)) 
-				{
-					if(m_PA.sensor_flag){ MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);	step =STEP6; } 
-					else{ MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);	step =STEP4; } 
-				}
-			}
-			else{} //err
-	     break;
-
-	     case STEP4:
-			if(m_PA.sensor_flag) { MOTOR_Stop(&m_PA);	step =STEP5;}
-			else if(!m_PA.sensor_flag && m_PA.stop_flag ){} //err
-	     break;
-
-	     case STEP5:
-	     	if(m_PA.sensor_flag){MOTOR_Drive(&m_PA,DIR_BACKWARD,10,10,300);	step =STEP6;} 
-			else if(!m_PA.sensor_flag && m_PA.stop_flag ){} //err
-	     break;
-
-	     case STEP6:
-			if(!m_PA.sensor_flag){MOTOR_Stop(&m_PA);	step =STEP7;} 
-			else if(m_PA.sensor_flag && m_PA.stop_flag ){} //err
-		 break;		 
-		 
-		 case STEP7:
-		 	if(m_PA.stop_flag)
-		 	{
-				step = STEP_END;
-				m_PA.org_complete_flag = 1;
-				m_PA.position_cnt = 0;
-		 	}
-	     break;
-
-
-	}
-}
-
-void MOTOR_PA_Origin_2()
-{
-	static uint8_t step =STEP1;
-	static uint32_t lastTime;
-	static uint8_t sensorRecode = 0;
-	static uint8_t err= NO;
-
-	
-	switch(step)
-	{
-	     case STEP1:
-	     	if(m_PA.sensor_flag) step = STEP5;
-	     	else step = STEP2;
-	     break;
-
-	     case STEP2:
-			if(MOTOR_SensorCheek(&m_PA , DIR_FORWARD,10,100, 300, YES)) 
-			{
-				MOTOR_Slow_stop(&m_PA, 300);
-				step = STEP3;
-			}
-			else if(m_PA.stop_flag) err = YES;
-	     break;
-
-	     case STEP3:
-			if(m_PA.stop_flag)
-			{
-				if(TIME_Passed(&m_PA.time[0],1000)) 
-				{
-					if(m_PA.sensor_flag) step =STEP5; 
-					else step =STEP4; 
-				}
-			}
-	     break;
-
-	     case STEP4:
-			if(MOTOR_SensorCheek(&m_PA , DIR_BACKWARD,10,10, 300, YES)) 
-			{
-				MOTOR_Stop(&m_PA);
-				step =STEP5;
-			}
-			else if(m_PA.stop_flag) err = YES;
-	     break;
-
-	     case STEP5:
-			if(MOTOR_SensorCheek(&m_PA , DIR_BACKWARD,10,10, 300, NO)) 
-			{
-				MOTOR_Stop(&m_PA);
-				step =STEP6;
-			}
-			else if(m_PA.stop_flag) err = YES;
-	     break;
-
-	     case STEP6:
-			step =STEP_END;
-		 break;		 
-		 	
-
-
-	}
-}
-
-void MOTOR_PA_Origin_3()
-{
-	static uint8_t step =STEP1;
-	static uint32_t lastTime;
 	static uint8_t sensorRecode = 0;
 	static uint8_t err= NO;
 
@@ -377,18 +255,21 @@ void MOTOR_PA_Origin_3()
 			if(MOTOR_SensorCheek(&m_PA , DIR_BACKWARD,10,10, 300, NO)) 
 			{
 				MOTOR_Stop(&m_PA);
-				step =STEP6;
+				step =STEP5;
 			}
 			else if(m_PA.stop_flag) err = YES;
 	     break;
 
-	     case STEP6:
-			step =STEP_END;
-		 break;		 
-		 	
-
-
+	     case STEP5:
+		     if(m_PA.stop_flag) 
+		     {
+				step =STEP1;
+				return ORG_SUCCESS;
+			 }
+		 break;		 		 	
 	}
+
+	return ORG_NOTYET;
 }
 
 
@@ -433,12 +314,14 @@ uint8_t MOTOR_StopCheek(Motor_drive_T * motor , uint8_t dir,uint32_t startspeed,
 }
 
 
-void MOTOR_RO_Origin()
+uint8_t MOTOR_RO_Origin()
 {
 	static uint8_t step =STEP1;
 	int nowAdcDegree;
 	long moveDegree;
 	static int prevAdcDegree = 0;
+
+	
 	switch(step)
 	{
 
@@ -487,14 +370,23 @@ void MOTOR_RO_Origin()
 				if(TIME_Passed(&m_RO.time[0],1000)) 
 				{
 					MOTOR_ReadDegree_RO(&prevAdcDegree);
-					m_RO.org_complete_flag = 1;
+					m_RO.org_complete_flag = YES;
 					m_RO.position_cnt = 0;
-					step = STEP_END;
+					step = STEP1;
+					return ORG_SUCCESS;
 				}
 	     	}
 	     break;
 
 	}
+
+	return ORG_NOTYET;
+}
+uint8_t MOTOR_OffsetMove(Motor_drive_T *motor, uint32_t offset)
+{
+	if(offset >0) MOTOR_Drive(motor,DIR_FORWARD,10,100,offset);
+	else if(offset<0) MOTOR_Drive(motor,DIR_BACKWARD,10,100,offset);	
+	else {} //아무것도 안함 
 }
 
 int MOTOR_ReadDegree_RO(int *adcDegree)

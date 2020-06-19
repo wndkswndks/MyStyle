@@ -107,6 +107,10 @@ void UART_Insert(UART_CH_E ch, UART_T *uart)
 		
 	}
 }
+void UART_Pcput(char *data)
+{
+
+}
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	  if(huart ->Instance == USART2)

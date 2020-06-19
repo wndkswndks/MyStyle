@@ -39,6 +39,9 @@
 #define ADMIT	1
 #define NOTADMIT	0
 
+#define ORG_SUCCESS		1
+#define ORG_NOTYET		0
+
 
 #define RO_1_DEGREE_PULSE		426
 
@@ -103,13 +106,13 @@ void MOTOR_Stop(Motor_drive_T *);
 void MOTOR_Slow_stop(Motor_drive_T *, uint32_t  );
 void MOTOR_Drive(Motor_drive_T * ,uint8_t ,uint32_t , uint32_t, uint32_t  );
 void MOTOR_Value_reset(Motor_drive_T *);
-void MOTOR_PA_Origin_1();
-void MOTOR_PA_Origin_2();
-void MOTOR_PA_Origin_3();
-void MOTOR_RO_Origin();
+uint8_t MOTOR_PA_Origin();
+uint8_t MOTOR_RO_Origin();
 uint8_t MOTOR_SensorCheek(Motor_drive_T *, uint8_t ,uint32_t , uint32_t , uint32_t ,uint8_t );
 uint8_t MOTOR_StopCheek(Motor_drive_T *, uint8_t ,uint32_t , uint32_t , uint32_t ,uint8_t );
 uint8_t MOTOR_Crash_prevention(Motor_drive_T * ,int ,uint32_t );
+
+uint8_t MOTOR_OffsetMove(Motor_drive_T *, uint32_t );
 int MOTOR_ReadDegree_RO(int *adcDegree);
 /*  			function end  			*/
 #endif

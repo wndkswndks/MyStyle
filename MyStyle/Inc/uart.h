@@ -67,6 +67,7 @@ typedef struct
 void UART_Pop(uint8_t * , UART_T *);
 void UART_Insert(UART_CH_E , UART_T *);
 void UART_Cmd();
+void UART_Pcput(char*);
 void UART_IS_Getdata(UART_T *);
 UART_HandleTypeDef * UART_master(UART_CH_E);
 UART_CMD_T UART_Passing_data(char *);

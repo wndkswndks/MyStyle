@@ -128,7 +128,10 @@
 
 
 /*  			stuct start  			*/
-
+typedef struct
+{
+	uint8_t main_mode;
+} MODE_T;
 /*  			stuct end  				*/
 
 
@@ -138,9 +141,10 @@ void CMD_Ctrl(UART_CMD_T);
 void CMD_Mode(UART_CMD_T);
 
 void CMD_Mode_CT();
-void CMD_Mode_PANO();
+void CMD_Mode_PANO(long);
 void CMD_Mode_CEPH();
 void CMD_Mode_PREC();
+void CMD_ModePrintf(long);
 
 
 
