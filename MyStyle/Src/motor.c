@@ -216,7 +216,7 @@ void MOTOR_Drive(Motor_drive_T * motor , uint8_t dir,uint32_t startspeed, uint32
 	
 }
 
-void MOTOR_PA_Origin()
+void MOTOR_PA_Origin_1()
 {
 	static uint8_t step =STEP1;
 	static uint32_t lastTime;
@@ -276,7 +276,7 @@ void MOTOR_PA_Origin()
 	}
 }
 
-void MOTOR_PA_Origin()
+void MOTOR_PA_Origin_2()
 {
 	static uint8_t step =STEP1;
 	static uint32_t lastTime;
@@ -337,6 +337,60 @@ void MOTOR_PA_Origin()
 
 	}
 }
+
+void MOTOR_PA_Origin_3()
+{
+	static uint8_t step =STEP1;
+	static uint32_t lastTime;
+	static uint8_t sensorRecode = 0;
+	static uint8_t err= NO;
+
+	
+	switch(step)
+	{
+	     case STEP1:
+	     	if(m_PA.sensor_flag) step = STEP4;
+	     	else step = STEP2;
+	     break;
+
+	     case STEP2:
+			if(MOTOR_SensorCheek(&m_PA , DIR_FORWARD,10,100, 300, YES)) 
+			{
+				MOTOR_Slow_stop(&m_PA, 300);
+				step = STEP3;
+			}
+			else if(m_PA.stop_flag) err = YES;
+	     break;
+
+	     case STEP3:
+			if(m_PA.stop_flag)
+			{
+				if(TIME_Passed(&m_PA.time[0],1000)) 
+				{
+					if(m_PA.sensor_flag) step =STEP4; 
+					else err = YES;
+				}
+			}
+	     break;
+
+	     case STEP4:
+			if(MOTOR_SensorCheek(&m_PA , DIR_BACKWARD,10,10, 300, NO)) 
+			{
+				MOTOR_Stop(&m_PA);
+				step =STEP6;
+			}
+			else if(m_PA.stop_flag) err = YES;
+	     break;
+
+	     case STEP6:
+			step =STEP_END;
+		 break;		 
+		 	
+
+
+	}
+}
+
 
 uint8_t MOTOR_SensorCheek(Motor_drive_T * motor , uint8_t dir,uint32_t startspeed, uint32_t destspeed, uint32_t totalpulse,uint8_t sensorstate)
 {
