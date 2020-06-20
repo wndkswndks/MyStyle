@@ -24,7 +24,10 @@ void CMD_Ctrl(UART_CMD_T cmd)
 void CMD_Mode(UART_CMD_T cmd)
 {
 	uint16_t value = cmd.value;
-	do{ CMD_ModePrintf(cmd.inst); }while(0);
+	static long prev_inst = 0;
+
+	if(prev_inst != cmd.inst) CMD_ModePrintf(cmd.inst); 
+	prev_inst = cmd.inst;	
 
 		
 	
