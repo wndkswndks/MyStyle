@@ -23,7 +23,6 @@ void MOTOR_Value_reset(Motor_drive_T *motor)
 	motor->total_pulsecnt = 0;
 	motor->pulse_cnt =0;
 	motor->movetype = MOVETYPE_NOTENTER;
-	motor->pulse_admit = NOTADMIT;
 	motor->decrease_pulsecnt = 0;
 
 }
@@ -382,7 +381,7 @@ uint8_t MOTOR_RO_Origin()
 
 	return ORG_NOTYET;
 }
-uint8_t MOTOR_OffsetMove(Motor_drive_T *motor, uint32_t offset)
+uint8_t MOTOR_RO_PA_OffsetMove(Motor_drive_T *motor, uint32_t offset)
 {
 	if(offset >0) MOTOR_Drive(motor,DIR_FORWARD,10,100,offset);
 	else if(offset<0) MOTOR_Drive(motor,DIR_BACKWARD,10,100,offset);	

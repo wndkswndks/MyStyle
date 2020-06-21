@@ -37,7 +37,7 @@ void CMD_Mode(UART_CMD_T cmd)
 
 	    case CT:					
 		case CT_CHILD:		
-			CMD_Mode_CT();
+			CMD_Mode_CT(cmd.inst);
 		break;
 
 		case PANO_STAN:		
@@ -66,18 +66,12 @@ void CMD_Mode(UART_CMD_T cmd)
 }
 uint8_t txtxdata[5]="qwer";
 
-void CMD_Mode_CT()
-{
-
-}
-
-void CMD_Mode_PANO(long panoMode)
+void CMD_Mode_CT(long ctmode)
 {
 	static uint8_t step;
 	uint8_t ro_origin_ok, pa_origin_ok;
 
-	m_mode.main_mode = panoMode;
-	//CMD_PanoModePrintf(panoMode);
+	m_mode.main_mode = ctmode;
 	switch(step)
 	{
 
@@ -88,13 +82,51 @@ void CMD_Mode_PANO(long panoMode)
 	     break;
 
 	     case STEP2:
-			MOTOR_OffsetMove(&m_PA,1000);
-			MOTOR_OffsetMove(&m_RO,1000);
+			MOTOR_RO_PA_OffsetMove(&m_PA,m_PA.ct_offset);
+			MOTOR_RO_PA_OffsetMove(&m_RO,m_RO.ct_offset);
 			if(m_PA.stop_flag && m_RO.stop_flag)step = STEP3;
 	     break;
 
 	     case STEP3:
 
+	     break;
+
+	     case STEP4:
+
+	     break;
+
+	     case STEP5:
+
+	     break;
+
+	}
+
+}
+
+void CMD_Mode_PANO(long panoMode)
+{
+	static uint8_t step;
+	uint8_t ro_origin_ok, pa_origin_ok;
+
+	m_mode.main_mode = panoMode;
+	
+	switch(step)
+	{
+
+	     case STEP1:
+			ro_origin_ok = MOTOR_RO_Origin();
+			pa_origin_ok = MOTOR_PA_Origin();
+			if(ro_origin_ok && pa_origin_ok) step = STEP2;
+	     break;
+
+	     case STEP2:
+			MOTOR_RO_PA_OffsetMove(&m_PA,m_PA.pano_offset);
+			MOTOR_RO_PA_OffsetMove(&m_RO,m_RO.pano_offset);
+			if(m_PA.stop_flag && m_RO.stop_flag)step = STEP3;
+	     break;
+
+	     case STEP3:
+			
 	     break;
 
 	     case STEP4:

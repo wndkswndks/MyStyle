@@ -63,19 +63,15 @@ typedef enum
 
 
 /*  			stuct start  			*/
-typedef struct
-{
-	uint16_t ct_offset;
-	uint16_t pano_offset;
-	uint16_t ceph_offset;
-} Motor_Material_T;
+
 
 typedef struct
 {	
 	uint8_t accel_step;
 	uint8_t dir;
+	MOVETYPE_E movetype;
+	
 	uint8_t stop_flag;
-	uint8_t pulse_admit;
 	uint8_t sensor_flag;
 	uint8_t org_complete_flag;
 	
@@ -90,7 +86,11 @@ typedef struct
 	int position_cnt;
 	uint32_t decrease_pulsecnt;
 	uint32_t total_pulsecnt;
-	MOVETYPE_E movetype;
+
+	uint16_t ct_offset;
+	uint16_t pano_offset;
+	uint16_t ceph_offset;
+	
 }Motor_drive_T;
 /*  			stuct end  				*/
 
@@ -112,7 +112,7 @@ uint8_t MOTOR_SensorCheek(Motor_drive_T *, uint8_t ,uint32_t , uint32_t , uint32
 uint8_t MOTOR_StopCheek(Motor_drive_T *, uint8_t ,uint32_t , uint32_t , uint32_t ,uint8_t );
 uint8_t MOTOR_Crash_prevention(Motor_drive_T * ,int ,uint32_t );
 
-uint8_t MOTOR_OffsetMove(Motor_drive_T *, uint32_t );
+uint8_t MOTOR_RO_PA_OffsetMove(Motor_drive_T *, uint32_t );
 int MOTOR_ReadDegree_RO(int *adcDegree);
 /*  			function end  			*/
 #endif

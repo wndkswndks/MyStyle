@@ -140,7 +140,7 @@ typedef struct
 void CMD_Ctrl(UART_CMD_T);
 void CMD_Mode(UART_CMD_T);
 
-void CMD_Mode_CT();
+void CMD_Mode_CT(long);
 void CMD_Mode_PANO(long);
 void CMD_Mode_CEPH();
 void CMD_Mode_PREC();
