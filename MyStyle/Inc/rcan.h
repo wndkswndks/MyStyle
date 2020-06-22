@@ -35,6 +35,27 @@
 #define	POS_DIR				1
 #define	NEG_DIR				0
 
+
+
+
+#define	CO_P_MAX_PULSE_C		301600
+#define	CO_N_MAX_PULSE_C		8160	
+#define	CO_ACCEL_PULSE_C		2
+#define	CO_START_PULSE_C		9000
+#define	CO_MAX_PULSE_C			20000
+#define CO_0_1_MM_PULSE_C		320	
+
+#define	SD_P_MAX_PULSE		89362
+#define	SD_N_MAX_PULSE		55130
+#define	SD_ACCEL_PULSE		4
+#define	SD_START_PULSE		3000
+#define	SD_MAX_PULSE		10491
+#define	SD_0_1_MM_PULSE		27
+
+#define ADC_CANINE		91
+#define PA_ADC			95
+#define RO_ADC			96
+
 /*  			define end  			*/
 
 
@@ -51,7 +72,18 @@ typedef struct
 	uint16_t inst;
 	uint32_t value;
 	uint16_t msg;
+
+	uint8_t stop_flag;
+	uint8_t org_complete_flag;
+	uint16_t move_distance;
 } CAN_T;
+
+typedef struct
+{
+	uint32_t pa_value;
+	uint32_t ro_value;
+	uint8_t is_adc_ok;
+} CAN_ADC_T;
 /*  			stuct end  				*/
 
 

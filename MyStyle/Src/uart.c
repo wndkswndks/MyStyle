@@ -111,6 +111,11 @@ void UART_Pcput(char *data)
 {
 
 }
+void UART_Pcprintf(char *data, ...)
+{
+
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
 	  if(huart ->Instance == USART2)

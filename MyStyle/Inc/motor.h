@@ -90,7 +90,9 @@ typedef struct
 	uint16_t ct_offset;
 	uint16_t pano_offset;
 	uint16_t ceph_offset;
+
 	
+
 }Motor_drive_T;
 /*  			stuct end  				*/
 
