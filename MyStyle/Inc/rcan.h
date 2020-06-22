@@ -9,6 +9,10 @@
 
 
 /*  			define start  			*/
+
+#define  ADC_CANINE		91
+#define  PA_ADC			95
+#define  RO_ADC			96
 #define	CAN_AXIS_POS_DIR			0x9101
 #define	CAN_AXIS_0_1_UNIT_PULSE		0x9102
 #define	CAN_AXIS_P_MAX_PULSE		0x9103
@@ -52,9 +56,7 @@
 #define	SD_MAX_PULSE		10491
 #define	SD_0_1_MM_PULSE		27
 
-#define ADC_CANINE		91
-#define PA_ADC			95
-#define RO_ADC			96
+
 
 /*  			define end  			*/
 
@@ -76,6 +78,10 @@ typedef struct
 	uint8_t stop_flag;
 	uint8_t org_complete_flag;
 	uint16_t move_distance;
+
+	uint16_t ct_offset;
+	uint16_t pano_offset;
+	uint16_t ceph_offset;
 } CAN_T;
 
 typedef struct
